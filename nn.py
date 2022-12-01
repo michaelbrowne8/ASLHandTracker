@@ -7,8 +7,12 @@ import matplotlib.pyplot as plt
 from handDetector import handDetector as hd
 import cv2
 import time
+from sklearn.neural_network import MLPClassifier as MLPC
 
 '''
+
+Ok so I overcomplicated it, one layer works
+
 File's a little messy, so here's whats going on.
 
     - dataNew.npy is unprocessed, so I process it all using preprocess
@@ -70,16 +74,16 @@ translate = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N
 
 removed = [2, 3, 14, 15, 16, 26, 28]
 
-for r in removed:
-    labels = np.where(labels == r, 27, labels)
+# for r in removed:
+#     labels = np.where(labels == r, 27, labels)
 
-for i in range(2, 14):
-    labels = np.where(labels == i, i - 2, labels)
+# for i in range(2, 14):
+#     labels = np.where(labels == i, i - 2, labels)
 
-for i in range(17, 26):
-    labels = np.where(labels == i, i - 5, labels)
+# for i in range(17, 26):
+#     labels = np.where(labels == i, i - 5, labels)
 
-labels = np.where(labels == 27, len(newTranslate)-1, labels)
+# labels = np.where(labels == 27, len(newTranslate)-1, labels)
 
 X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2)
 
@@ -120,9 +124,10 @@ num_epochs = 150
 
 input_dim = 21 * 3 # including z
 # input_dim = 21 * 2 # not including z
-hidden_dims = [500, 300, 100]
-output_dim = len(newTranslate)
-# output_dim = len(translate)
+# hidden_dims = [500, 300, 100]
+hidden_dims = [150]
+# output_dim = len(newTranslate)
+output_dim = len(translate)
 model = Model(input_dim, hidden_dims, output_dim)
 
 train_data = Data(X_train, y_train)
@@ -179,18 +184,11 @@ def train(model, batch_size=64, num_epochs=100, criterion=criterion, optimizer=o
 
 
 
-model = train(model)
+# model = train(model)
+model = MLPC()
+model.fit(data, labels)
+print(model.score(data, labels))
 
-#model = MLPC(hidden_layer_sizes=(100, 70, 50, 20, 10), batch_size=batch_size, max_iter=num_epochs)
-# model = LR()
-# model = GaussianMixture(len(translate))
-# model.fit(data, labels)
-# score = model.score(data, labels)
-
-# print('\n\n')
-# print(f'{score=}')
-# print('\n\n')
-# input()
 
 pTime = 0
 cTime = 0
@@ -216,14 +214,14 @@ while True:
         lmlist = lmlist.reshape(1, 21*3) # including z
         # lmlist = lmlist.reshape(1, 21*2) # not including z
         # lmlist = lmlist[:, :2] # no z
-        lmlist = torch.from_numpy(lmlist.astype(np.float32))
-        zs = model(lmlist[None, :, :])
+        # lmlist = torch.from_numpy(lmlist.astype(np.float32))
+        # zs = model(lmlist[None, :, :])
         
-        pred = zs.max(1, keepdim=True)[1] 
-        # pred = model.predict(lmlist)[0]
+        # pred = zs.max(1, keepdim=True)[1] 
+        pred = model.predict(lmlist)[0]
         # pred = max(zs)
-        letter = newTranslate[pred]
-        # letter = translate[pred]
+        # letter = newTranslate[pred]
+        letter = translate[pred]
     cTime = time.time()
     fps = int(1/(cTime-pTime))
     pTime = cTime
