@@ -71,7 +71,7 @@ while True:
         pred = model.predict(lmlist)[0]
         letter = translate[pred]
     frame = cv2.flip(frame, 1)
-    cv2.putText(frame, letter, (10, 80), 2, 3, (203, 169, 69), 3)
+    cv2.putText(frame, letter, (10, 80), 2, 3, (203, 169, 69), 3) #BGR hand color
 
     cv2.imshow("image", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
