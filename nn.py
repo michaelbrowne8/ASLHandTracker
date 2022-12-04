@@ -1,37 +1,18 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
-import torch
-from torch.utils.data import Dataset, DataLoader
-import torch.nn as nn
-import matplotlib.pyplot as plt
 from handDetector import handDetector as hd
 import cv2
 import time
 from sklearn.neural_network import MLPClassifier as MLPC
-from sklearn.model_selection import GridSearchCV as GSCV
 from sklearn.model_selection import cross_val_score
+
+
 '''
-
-Ok so I overcomplicated it, one layer works
-
-File's a little messy, so here's whats going on.
-
-    - dataNew.npy is unprocessed, so I process it all using preprocess
-    - for some of the labels, there just isn't enough info on them
-        (like c or o) so those just become "nothing"
-        * scroll down to line 60 or so for new alphabet
-    - train test split up the info, saving 20% for testing
-    - creating the model (feel free to change around to see if it works better)
-    - giving the model its parameters (batch size, lr, ...)
-    - training and testing
-
 At the very bottom of the file is the hand detector using the webcam
 This one we can actually make into a separate file so that it can just be 
     imported and ran
 But it should show the tracked hand and the letter it thinks it is
 
 Press 'Q' to quit
-
 '''
 
 labels = np.load('labelsNew.npy') # 19436 labels
@@ -57,13 +38,16 @@ for i in range(len(data)):
 data = data.reshape(data.shape[0], 21*3) # including z
 
 translate = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", 
-            "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "del", "nothing", "space"
+            "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "nothing"
     ]
+
+labels = np.where(labels == 27, 26, labels)
+labels = np.where(labels == 28, 26, labels)
 
 model = MLPC(hidden_layer_sizes=(175,), solver="adam", max_iter=500)
 model.fit(data, labels)
 print(model.score(data, labels))
-print(np.mean(cross_val_score(model, data, labels)))
+# print(np.mean(cross_val_score(model, data, labels)))
 input()
 pTime = 0
 cTime = 0
