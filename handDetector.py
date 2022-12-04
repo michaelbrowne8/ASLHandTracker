@@ -32,7 +32,7 @@ class handDetector():
             for lm in myHand.landmark:
                 cx, cy = int(lm.x*w), int(lm.y*h)
                 lmList.append([lm.x, lm.y, lm.z])
-                if draw: cv2.circle(im, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+                if draw: cv2.circle(im, (cx, cy), 12, (203, 169, 69), cv2.FILLED)
         return lmList
 
     def newHands(self, im, draw=True):

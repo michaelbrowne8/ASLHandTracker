@@ -1,7 +1,6 @@
 import numpy as np
 from handDetector import handDetector as hd
 import cv2
-import time
 from sklearn.neural_network import MLPClassifier as MLPC
 from sklearn.model_selection import cross_val_score
 import pickle
@@ -16,8 +15,8 @@ But it should show the tracked hand and the letter it thinks it is
 Press 'Q' to quit
 '''
 
-# labels = np.load('labelsNew.npy') # 19436 labels
-# data = np.load('dataNew.npy').astype(float)    # 19436 preprocessed images 
+# labels = np.load('labelsNew.npy') # 16502 labels
+# data = np.load('dataNew.npy').astype(float)    # 16502 preprocessed images 
                                # of x,y,z at 21 landmarks a hand
 
 def preprocess(lmlist):
@@ -39,7 +38,7 @@ def preprocess(lmlist):
 # data = data.reshape(data.shape[0], 21*3) # including z
 
 translate = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", 
-            "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "nothing"
+            "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", ""
     ]
 '''
 labels = np.where(labels == 27, 26, labels)
@@ -55,8 +54,6 @@ if answer == "y":
 '''
 # loading model
 model = pickle.load(open('nnWeights.sav', 'rb'))
-pTime = 0
-cTime = 0
 cap = cv2.VideoCapture(0)
 detector = hd(maxHands=1)
 while True:
@@ -64,7 +61,7 @@ while True:
     h, w, c = frame.shape
     frame = detector.findHands(frame)
     lmlist = detector.findPosition(frame)
-    letter = "nothing"
+    letter = ""
     if lmlist:
         lmlist = preprocess(np.array(lmlist, dtype=float))
         if lmlist.shape != (21, 3):
@@ -73,12 +70,8 @@ while True:
         lmlist = lmlist.reshape(1, 21*3)
         pred = model.predict(lmlist)[0]
         letter = translate[pred]
-    cTime = time.time()
-    fps = int(1/(cTime-pTime))
-    pTime = cTime
     frame = cv2.flip(frame, 1)
-    cv2.putText(frame, str(fps), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
-    cv2.putText(frame, letter, (h-20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
+    cv2.putText(frame, letter, (10, 80), 2, 3, (203, 169, 69), 3)
 
     cv2.imshow("image", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
