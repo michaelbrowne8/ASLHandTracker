@@ -63,6 +63,4 @@ while True:
         cv2.destroyAllWindows()
         cv2.waitKey(1)
         break
-=======
 
->>>>>>> d97275c1cec82b40b2375b85e8471a87729c1811
