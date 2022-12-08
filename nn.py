@@ -4,6 +4,8 @@ import cv2
 from sklearn.neural_network import MLPClassifier as MLPC
 from sklearn.model_selection import cross_val_score
 import pickle
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 
 '''
@@ -15,8 +17,8 @@ But it should show the tracked hand and the letter it thinks it is
 Press 'Q' to quit
 '''
 
-# labels = np.load('labelsNew.npy') # 16502 labels
-# data = np.load('dataNew.npy').astype(float)    # 16502 preprocessed images 
+labels = np.load('labelsNew.npy') # 16502 labels
+data = np.load('dataNew.npy').astype(float)    # 16502 preprocessed images 
                                # of x,y,z at 21 landmarks a hand
 
 def preprocess(lmlist):
@@ -32,18 +34,18 @@ def preprocess(lmlist):
   newList[:, 2] = (lmlist[:, 2] - min[2]) / (1.0 * max[2] - min[2])
   return newList
 
-# for i in range(len(data)):
-#     data[i] = preprocess(data[i])
+for i in range(len(data)):
+    data[i] = preprocess(data[i])
 
-# data = data.reshape(data.shape[0], 21*3) # including z
+data = data.reshape(data.shape[0], 21*3) # including z
 
 translate = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", 
             "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", ""
     ]
-'''
+
 labels = np.where(labels == 27, 26, labels)
 labels = np.where(labels == 28, 26, labels)
-
+'''
 model = MLPC(hidden_layer_sizes=(175,), max_iter=500)
 model.fit(data, labels)
 print(model.score(data, labels))
@@ -54,6 +56,16 @@ if answer == "y":
 '''
 # loading model
 model = pickle.load(open('nnWeights.sav', 'rb'))
+
+
+cm = confusion_matrix(model.predict(data), labels)
+
+cm_display = ConfusionMatrixDisplay(confusion_matrix = cm)
+
+cm_display.plot()
+plt.show()
+assert(1==2)
+
 cap = cv2.VideoCapture(0)
 detector = hd(maxHands=1)
 while True:
