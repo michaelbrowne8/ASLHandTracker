@@ -14,5 +14,3 @@ https://sourceforge.isae.fr/projects/ralf/wiki/Joining_an_existing_Git_repositor
 Remember to install the libraries in requirements.txt
 
 opencv-python is cv2
-
-Getting this stuff onto your computer and being connected to the github is hard and weird to do, so try getting Github Desktop and make a new folder in your computer for project. Then click the green code button in the top right, choose open with github desktop, and you can push and pull easily with there if you don't know git commands like commit, push, pull.
