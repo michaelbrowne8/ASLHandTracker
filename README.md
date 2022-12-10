@@ -1,6 +1,6 @@
 # ASLHandTracker
 
-https://sourceforge.isae.fr/projects/ralf/wiki/Joining_an_existing_Git_repository
+Using this model, you can sign letters of the ASL alphabet on your own camera and it will predict what letter it is using a neural network.
 
  ### Important Info
  For dataNew.npy and labelsNew.npy, there is no preprocessing, just raw data
